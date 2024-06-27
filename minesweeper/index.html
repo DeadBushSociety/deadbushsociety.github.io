@@ -1,19 +1,30 @@
-<!doctype html>
+<!DOCTYPE html>
 <head>
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
-  <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="apple-touch-icon-180.png">
-  <link rel="apple-touch-icon" type="image/png" sizes="167x167" href="apple-touch-icon-167.png">
-  <title>INDEV Minesweeper - Kep Edition</title>
-  <script src="mines.js" type="text/javascript" defer></script>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png" />
+  <link
+    rel="apple-touch-icon"
+    type="image/png"
+    sizes="180x180"
+    href="apple-touch-icon-180.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    type="image/png"
+    sizes="167x167"
+    href="apple-touch-icon-167.png"
+  />
+  <title>Minesweeper - Kep Edition</title>
+  <script src="./mines.js" type="text/javascript" defer></script>
+  <script src="./colours.js" type="text/javascript" defer></script>
   <style>
     row {
       display: block;
     }
     cell {
-      width: 28px;
-      height: 28px;
+      width: 27px;
+      height: 27px;
       display: inline-block;
       border: 1px solid #505052;
       vertical-align: top;
@@ -25,44 +36,51 @@
       line-height: 26px;
       box-shadow: 0px 0px 0px 1px black inset;
     }
-    #gamefield {
+    .gamefield {
       background: #2f2f2f;
     }
-    cell.flag {
+    .flag {
       background: #7c1d00;
-      box-shadow:
-        inset 0 0 0 1px black,
-        inset 0 0 0 3px #661800;
+      box-shadow: inset 0 0 0 1px black, inset 0 0 0 3px rgba(0, 0, 0, 0.2);
     }
-    cell.revealed {
+    .revealed {
       background: #fff3c0;
       color: #370d00;
-      box-shadow:
-        inset 0 0 0 1px black,
-        inset 0 0 0 3px #b8af89;
+      box-shadow: inset 0 0 0 1px black, inset 0 0 0 3px rgba(0, 0, 0, 0.2);
     }
-    cell.unflagged-mine {
+    .unflagged-mine {
       background: #e63a21;
-      box-shadow:
-        inset 0 0 0 1px black,
-        inset 0 0 0 3px #9e2917;
-    }
-    cell.flagged-mine {
-      background: #7c1d00;
-      box-shadow:
-        inset 0 0 0 1px black,
-        inset 0 0 0 3px #661800;
+      box-shadow: inset 0 0 0 1px black, inset 0 0 0 3px rgba(0, 0, 0, 0.3);
     }
   </style>
 </head>
 <body>
   <div class="gamefield_container">
-    <div id="gamefield">
-      <div id="container">
+    <div class="gamefield">
+      <div class="colour-pickers">
+        <div id="flag-picker">
+          Flags <input type="color" id="flag_colour" value="#7c1d00" />
+        </div>
+        <div id="mine-picker">
+          Mines <input type="color" id="mine_colour" value="#e63a21" />
+        </div>
+        <div id="revealed-picker">
+          Numbers
+          <input type="color" id="revealed_colour" value="#fff3c0" />
+        </div>
+        <div id="unrevealed-picker">
+          Cells
+          <input type="color" id="unrevealed_colour" value="#2f2f2f" />
+        </div>
+      </div>
+      <div class="info-utils">
         <div id="flags">
           <span id="num_flags"></span>
         </div>
         <div id="middle-space">
+          <button onclick="defaultColours()" id="default-colours">
+            Default colours
+          </button>
           <button onclick="reset_game()" id="reset"></button>
         </div>
         <div id="time">
@@ -88,11 +106,30 @@
       align-items: center;
       flex-direction: column;
     }
-    #gamefield {
+    .gamefield {
       border: 2px solid #505050;
       display: inline-block;
     }
-    #container {
+    .colour-pickers {
+      height: 38px;
+      width: auto;
+      display: flex;
+      justify-content: center;
+      justify-content: space-evenly;
+      align-items: center;
+      background-color: #2f2f2f;
+      border-bottom: 3px solid #505050;
+      box-shadow: 0px 0px 0px 1px black inset;
+      color: #ffffff;
+      font-family: monospace;
+      font-size: 15px;
+    }
+
+    input[type="color"] {
+      color-scheme: dark;
+    }
+
+    .info-utils {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -139,11 +176,16 @@
       width: 50%;
       display: flex;
       justify-content: center;
+      justify-content: space-evenly;
       align-items: center;
       background-color: #2f2f2f;
       border-left: 3px solid #505050;
       border-bottom: 3px solid #505050;
       box-shadow: 0px 0px 0px 1px black inset;
+    }
+    #default-colours {
+      background-color: #505050;
+      color: #ffffff;
     }
     #reset {
       height: 29px;

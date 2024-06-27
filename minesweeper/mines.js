@@ -8,11 +8,10 @@ let revealed_cells = 0;
 let game_over = false;
 let game_won = false;
 let gamefield = document.querySelector(".gamefield");
-let less_than_hundreds = false;
-let less_than_tens = false;
 let timer = false;
 let start_time = 0;
 let end_time = 0;
+let click_count = 0;
 
 //The amount of mines are checked at the start of the game and the counter is kept as a 3-digit number
 if (flags_left < 100) {
@@ -38,7 +37,7 @@ function timecalc(time) {
 function total_time() {
   let total_time = end_time - start_time;
   let [hours, minutes, seconds, leftover_ms] = timecalc(total_time);
-  console.log(
+  return (
     hours + " Hr " + minutes + " Min " + seconds + " Sec " + leftover_ms + " Ms"
   );
 }
@@ -220,6 +219,7 @@ function grid_initialize(num_col, num_row, num_mines) {
     grid[row] = [];
     for (let collumn = 0; collumn < num_col; collumn++) {
       grid[row][collumn] = {
+        is_checked: false,
         is_revealed: false,
         is_mine: false,
         flag: false,
@@ -270,6 +270,63 @@ function grid_initialize(num_col, num_row, num_mines) {
   return grid;
 }
 
+function bbbv(grid) {
+  let required_clicks = 0;
+  for (let row = 0; row < grid.length; row++) {
+    for (let col = 0; col < grid[row].length; col++) {
+      if (grid[row][col].count == 0 && !grid[row][col].is_checked) {
+        let patch_of_zeroes = [[row, col]];
+        let number_of_zeroes = 1;
+        for (let zero_index = 0; zero_index < number_of_zeroes; zero_index++) {
+          for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+              let surround_row = patch_of_zeroes[zero_index][0] - 1 + i;
+              let surround_col = patch_of_zeroes[zero_index][1] - 1 + j;
+              let cell_coordinate = [surround_row, surround_col];
+              if (in_bound(surround_row, surround_col)) {
+                if (
+                  grid[surround_row][surround_col].count == 0 &&
+                  !grid[surround_row][surround_col].is_checked
+                ) {
+                  patch_of_zeroes.push(cell_coordinate);
+                  number_of_zeroes++;
+                  grid[surround_row][surround_col].is_checked = true;
+                } else if (
+                  !grid[surround_row][surround_col].count == 0 &&
+                  !grid[surround_row][surround_col].is_checked
+                ) {
+                  grid[surround_row][surround_col].is_checked = true;
+                }
+              }
+            }
+          }
+        }
+        required_clicks++;
+      } else if (
+        !grid[row][col].count == 0 &&
+        !grid[row][col].is_mine &&
+        !grid[row][col].is_checked
+      ) {
+        let buglmao = false;
+        for (let surround_row = 0; surround_row < 3; surround_row++) {
+          for (let surround_col = 0; surround_col < 3; surround_col++) {
+            let given_row = grid[row] - 1 + surround_row;
+            let given_col = grid[row][col] - 1 + surround_col;
+            if (in_bound(given_row, given_col)) {
+              if (grid[given_row][given_col].count == 0) {
+                buglmao = true;
+              }
+            }
+          }
+        }
+        if (!buglmao) {
+          required_clicks++;
+        }
+      }
+    }
+  }
+  return required_clicks;
+}
 function grid_render(grid, num_row, num_col) {
   for (row_index = 0; row_index < num_row; row_index++) {
     let DOMrow = document.createElement("row");
@@ -353,10 +410,12 @@ function grid_render(grid, num_row, num_col) {
                 }
               }
             }
+            click_count++;
           }
         }
 
         if (grid[cell_row][cell_col].is_mine) {
+          click_count++;
           game_over_case(grid);
         } else if (
           !grid[cell_row][cell_col].count == 0 &&
@@ -368,12 +427,14 @@ function grid_render(grid, num_row, num_col) {
             document.getElementById("revealed_colour").value;
           grid[cell_row][cell_col].is_revealed = true;
           revealed_cells++;
+          click_count++;
         } else if (
           grid[cell_row][cell_col].count == 0 &&
           !grid[cell_row][cell_col].is_revealed &&
           !grid[cell_row][cell_col].flag
         ) {
           empty_patches(cell_row, cell_col, grid);
+          click_count++;
         }
 
         //If all non-mine cells are revealed,
@@ -381,8 +442,20 @@ function grid_render(grid, num_row, num_col) {
         if (revealed_cells == num_cells - num_mines) {
           game_won = true;
           timer = false;
+          let threebv = bbbv(grid);
+          let click_efficiency = threebv / click_count;
+          console.log(threebv);
+          console.log(click_count);
           end_time = new Date().getTime();
-          total_time();
+          document.getElementById("stats").style.display = "block";
+          document.getElementById(
+            "end-time"
+          ).textContent = `Total Time: ${total_time()}`;
+          document.getElementById(
+            "click-efficiency"
+          ).textContent = `Click efficiency: ${(click_efficiency * 100).toFixed(
+            2
+          )}%`;
           for (let row = 0; row < grid.length; row++) {
             for (let col = 0; col < grid[row].length; col++) {
               if (grid[row][col].is_mine && !grid[row][col].flag) {
@@ -410,31 +483,16 @@ function grid_render(grid, num_row, num_col) {
             stopWatch();
           }
         }
-
         add_flag(cell_row, cell_col, grid);
+        click_count++;
       });
     }
     gamefield.appendChild(DOMrow);
   }
 }
 
-document
-  .getElementById("revealed_colour")
-  .addEventListener(
-    "load",
-    revealed(document.getElementById("revealed_colour")),
-    false
-  );
-
-function revealed(colors) {
-  colors.addEventListener("input", updateAllRevealed, false);
-  colors.select();
-}
-function updateAllRevealed() {
-  for (i = 0; i < document.getElementsByClassName("revealed").length; i++) {
-    document.getElementsByClassName("revealed")[i].style.background =
-      document.getElementById("revealed_colour").value;
-  }
-}
+document.getElementsByClassName("close")[0].onclick = function () {
+  document.getElementById("stats").style.display = "none";
+};
 
 grid_render(grid_initialize(num_col, num_row, num_mines), num_row, num_col);

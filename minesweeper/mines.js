@@ -308,10 +308,11 @@ function bbbv(grid) {
         !grid[row][col].is_checked
       ) {
         let buglmao = false;
+        let cell_coords = [row, col];
         for (let surround_row = 0; surround_row < 3; surround_row++) {
           for (let surround_col = 0; surround_col < 3; surround_col++) {
-            let given_row = grid[row] - 1 + surround_row;
-            let given_col = grid[row][col] - 1 + surround_col;
+            let given_row = cell_coords[0] - 1 + surround_row;
+            let given_col = cell_coords[1] - 1 + surround_col;
             if (in_bound(given_row, given_col)) {
               if (grid[given_row][given_col].count == 0) {
                 buglmao = true;

@@ -14,17 +14,17 @@ let end_time = 0;
 let click_count = 0;
 
 //The amount of mines are checked at the start of the game and the counter is kept as a 3-digit number
-if (flags_left < 100) {
-  flags_in_html = "0" + flags_in_html;
+function flags() {
+  if (flags_left < 100) {
+    flags_in_html = "0" + flags_in_html;
+  }
+  if (flags_left < 10) {
+    flags_in_html = "0" + flags_in_html;
+  }
+  document.getElementById("num_flags").innerHTML = flags_in_html;
 }
-if (flags_left < 10) {
-  flags_in_html = "0" + flags_in_html;
-}
-document.getElementById("num_flags").innerHTML = flags_in_html;
 
-function reset_game() {
-  location.reload();
-}
+flags();
 
 function timecalc(time) {
   let hour = Math.floor(time / 3600000);
@@ -270,6 +270,8 @@ function grid_initialize(num_col, num_row, num_mines) {
   return grid;
 }
 
+let grid = grid_initialize(num_col, num_row, num_mines);
+
 function bbbv(grid) {
   let required_clicks = 0;
   for (let row = 0; row < grid.length; row++) {
@@ -457,6 +459,9 @@ function grid_render(grid, num_row, num_col) {
           ).textContent = `Click efficiency: ${(click_efficiency * 100).toFixed(
             2
           )}%`;
+          document.getElementsByClassName("close")[0].onclick = function () {
+            document.getElementById("stats").style.display = "none";
+          };
           for (let row = 0; row < grid.length; row++) {
             for (let col = 0; col < grid[row].length; col++) {
               if (grid[row][col].is_mine && !grid[row][col].flag) {
@@ -489,11 +494,10 @@ function grid_render(grid, num_row, num_col) {
       });
     }
     gamefield.appendChild(DOMrow);
+    document.getElementById("reset").onclick = function () {
+      location.reload();
+    };
   }
 }
 
-document.getElementsByClassName("close")[0].onclick = function () {
-  document.getElementById("stats").style.display = "none";
-};
-
-grid_render(grid_initialize(num_col, num_row, num_mines), num_row, num_col);
+grid_render(grid, num_row, num_col);

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <head>
+  <meta name="viewport" content="height=97vh, initial-scale=1.0" />
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png" />
@@ -33,40 +34,60 @@
       display: block;
     }
     cell {
-      width: 27px;
-      height: 27px;
+      width: 2.8vh;
+      height: 2.8vh;
       display: inline-block;
-      border: 1px solid #505052;
+      border: 0.1vh solid #505052;
       vertical-align: top;
       box-sizing: border-box;
       text-align: center;
       font-family: monospace;
       font-size: 13pt;
       font-weight: 600;
-      line-height: 26px;
-      box-shadow: 0px 0px 0px 1px black inset;
-    }
-    .gamefield {
-      background: #2f2f2f;
+      line-height: 2.6vh;
+      box-shadow: 0vh 0vh 0vh 0.1vh black inset;
     }
     .flag {
       background: #7c1d00;
-      box-shadow: inset 0 0 0 1px black, inset 0 0 0 3px rgba(0, 0, 0, 0.2);
+      box-shadow: inset 0 0 0 0.1vh black, inset 0 0 0 0.3vh rgba(0, 0, 0, 0.2);
     }
     .revealed {
       background: #fff3c0;
       color: #370d00;
-      box-shadow: inset 0 0 0 1px black, inset 0 0 0 3px rgba(0, 0, 0, 0.2);
+      box-shadow: inset 0 0 0 0.1vh black, inset 0 0 0 0.3vh rgba(0, 0, 0, 0.2);
     }
     .unflagged-mine {
       background: #e63a21;
-      box-shadow: inset 0 0 0 1px black, inset 0 0 0 3px rgba(0, 0, 0, 0.3);
+      box-shadow: inset 0 0 0 0.1vh black, inset 0 0 0 0.3vh rgba(0, 0, 0, 0.3);
     }
   </style>
 </head>
 <body>
-  <div class="gamefield_container">
-    <div class="gamefield">
+  <div class="main-container">
+    <div class="gamefield_container">
+      <div class="gamefield">
+        <div class="info-utils">
+          <div id="flags">
+            <span id="num_flags"></span>
+          </div>
+          <div id="middle-space">
+            <button id="reset"></button>
+          </div>
+          <div id="time">
+            <span class="digit" id="hr">00</span>
+            <span class="txt">Hr</span>
+            <span class="digit" id="min">00</span>
+            <span class="txt">Min</span>
+            <span class="digit" id="sec">00</span>
+            <span class="txt">Sec</span>
+            <span class="digit" id="ms">00</span>
+            <span class="txt">Ms</span>
+          </div>
+        </div>
+      </div>
+      <div id="message"><p1>Made with the power of foxxo silliness!</p1></div>
+    </div>
+    <div class="colours">
       <div class="colour-pickers">
         <div id="flag-picker">
           Flags <input type="color" id="flag_colour" value="#7c1d00" />
@@ -75,34 +96,18 @@
           Mines <input type="color" id="mine_colour" value="#e63a21" />
         </div>
         <div id="revealed-picker">
-          Numbers
+          Revealed
           <input type="color" id="revealed_colour" value="#fff3c0" />
         </div>
         <div id="unrevealed-picker">
-          Cells
+          Hidden
           <input type="color" id="unrevealed_colour" value="#2f2f2f" />
         </div>
       </div>
-      <div class="info-utils">
-        <div id="flags">
-          <span id="num_flags"></span>
-        </div>
-        <div id="middle-space">
-          <button onclick="defaultColours()" id="default-colours">
-            Default colours
-          </button>
-          <button onclick="reset_game()" id="reset"></button>
-        </div>
-        <div id="time">
-          <span class="digit" id="hr">00</span>
-          <span class="txt">Hr</span>
-          <span class="digit" id="min">00</span>
-          <span class="txt">Min</span>
-          <span class="digit" id="sec">00</span>
-          <span class="txt">Sec</span>
-          <span class="digit" id="ms">00</span>
-          <span class="txt">Ms</span>
-        </div>
+      <div id="default">
+        <button onclick="defaultColours()" id="default-colours">
+          Default colours
+        </button>
       </div>
     </div>
   </div>
@@ -115,35 +120,65 @@
   </div>
   <style>
     body {
-      background-color: #000000;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      margin: 0;
+      background-image: url("./space.png");
+      background-size: cover;
+    }
+    .main-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
     }
     .gamefield_container {
       display: flex;
-      justify-content: center;
-      align-items: center;
       flex-direction: column;
     }
     .gamefield {
-      border: 2px solid #505050;
+      border: 0.3vh solid #505050;
+      background: #2f2f2f;
+      user-select: none;
       display: inline-block;
+      -webkit-border-radius: 1vh 0vh 0vh 0vh;
+      -moz-border-radius: 1vh 0vh 0vh 0vh;
+      border-radius: 1vh 0vh 0vh 0vh;
+    }
+    .colours {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      width: auto;
+      height: fit-content;
+      background-color: #2f2f2f;
+      border-bottom: 0.3vh solid #505050;
+      border-top: 0.3vh solid #505050;
+      border-right: 0.3vh solid #505050;
+      -webkit-border-radius: 0vh 1vh 1vh 0vh;
+      -moz-border-radius: 0vh 1vh 1vh 0vh;
+      border-radius: 0vh 1vh 1vh 0vh;
     }
     .colour-pickers {
-      height: 38px;
-      width: auto;
+      box-shadow: 0vh 0vh 0vh 0.1vh black inset;
       display: flex;
-      justify-content: center;
-      justify-content: space-evenly;
-      align-items: center;
-      background-color: #2f2f2f;
-      border-bottom: 3px solid #505050;
-      box-shadow: 0px 0px 0px 1px black inset;
+      flex-direction: column;
+      align-items: end;
+      align-content: space-evenly;
+      padding: 0.5vh;
       color: #ffffff;
       font-family: monospace;
-      font-size: 15px;
+      font-size: 1.5vh;
+      -webkit-border-radius: 0vh 0.7vh 0vh 0vh;
+      -moz-border-radius: 0vh 0.7vh 0vh 0vh;
+      border-radius: 0vh 0.7vh 0vh 0vh;
     }
 
     input[type="color"] {
       color-scheme: dark;
+      cursor: pointer;
+      margin: 0.5vh;
+      vertical-align: sub;
     }
 
     .info-utils {
@@ -153,64 +188,105 @@
       color: #ffffff;
     }
     #time {
-      min-width: 210px;
+      min-width: 21vh;
       width: 40%;
       display: flex;
       justify-content: center;
       align-items: baseline;
-      padding-left: 5px;
-      padding-right: 5px;
+      padding-left: 0.5vh;
+      padding-right: 0.5vh;
       background-color: #2f2f2f;
-      border-left: 3px solid #505050;
-      border-bottom: 3px solid #505050;
-      box-shadow: 0px 0px 0px 1px black inset;
+      border-left: 0.3vh solid #505050;
+      border-bottom: 0.3vh solid #505050;
+      box-shadow: 0vh 0vh 0vh 0.1vh black inset;
     }
     .txt {
       font-family: monospace;
     }
     .digit {
       font-family: monospace;
-      font-size: 25px;
+      font-size: 2.5vh;
     }
     #flags {
-      min-width: 40px;
+      min-width: 4vh;
       width: 10%;
       display: flex;
       justify-content: center;
       align-items: center;
       background-color: #2f2f2f;
-      border-bottom: 3px solid #505050;
-      padding-left: 5px;
-      padding-right: 5px;
-      box-shadow: 0px 0px 0px 1px black inset;
+      border-bottom: 0.3vh solid #505050;
+      padding-left: 0.5vh;
+      padding-right: 0.5vh;
+      box-shadow: 0vh 0vh 0vh 0.1vh black inset;
+      -webkit-border-top-left-radius: 0.7vh;
+      -moz-border-top-left-radius: 0.7vh;
+      border-top-left-radius: 0.7vh;
     }
     #num_flags {
       font-family: monospace;
-      font-size: 25px;
+      font-size: 2.5vh;
     }
     #middle-space {
-      min-width: 31px;
+      min-width: 3.1vh;
       width: 50%;
       display: flex;
       justify-content: center;
       justify-content: space-evenly;
       align-items: center;
       background-color: #2f2f2f;
-      border-left: 3px solid #505050;
-      border-bottom: 3px solid #505050;
-      box-shadow: 0px 0px 0px 1px black inset;
+      border-left: 0.3vh solid #505050;
+      border-bottom: 0.3vh solid #505050;
+      box-shadow: 0vh 0vh 0vh 0.1vh black inset;
+    }
+    #default {
+      box-shadow: 0vh 0vh 0vh 0.1vh black inset;
+      display: flex;
+      border-top: 0.3vh solid #505050;
+      justify-content: center;
+      -webkit-border-radius: 0vh 0vh 0.7vh 0vh;
+      -moz-border-radius: 0vh 0vh 0.7vh 0vh;
+      border-radius: 0vh 0vh 0.7vh 0vh;
     }
     #default-colours {
-      background-color: #505050;
+      background-color: #2f2f2f;
       color: #ffffff;
       font-family: monospace;
+      padding-top: 0.3vh;
+      padding-bottom: 0.3vh;
+      cursor: pointer;
+      margin: 0.5vh;
+      border-radius: 1vh;
+    }
+    #default-colours:hover {
+      background-color: #424242;
     }
     #reset {
-      height: 29px;
-      width: 29px;
+      height: 2.7vh;
+      width: 2.7vh;
       background: url(favicon-32.png);
       background-repeat: no-repeat;
       background-size: contain;
+      cursor: pointer;
+      margin-top: 0.1vh;
+      margin-bottom: 0.1vh;
+      border-radius: 1vh;
+    }
+    #reset:hover {
+      background-color: #424242;
+    }
+    #message {
+      width: auto;
+      color: #ffffff;
+      font-family: monospace;
+      font-size: 1.5vh;
+      box-shadow: 0vh 0vh 0vh 0.1vh black inset;
+      border: 0.3vh solid #505050;
+      border-top: none;
+      background-color: #2f2f2f;
+      text-align: center;
+      -webkit-border-radius: 0vh 0vh 1vh 1vh;
+      -moz-border-radius: 0vh 0vh 1vh 1vh;
+      border-radius: 0vh 0vh 1vh 1vh;
     }
     .modal {
       display: none;
@@ -227,16 +303,16 @@
       background-color: #414141;
       color: #fff3c0;
       margin: 20% auto;
-      padding: 20px;
-      border: 1px solid #ffffff;
+      padding: 2vh;
+      border: 0.1vh solid #ffffff;
       width: 30%;
       font-family: monospace;
-      font-size: 25px;
+      font-size: 2.5vh;
     }
     .close {
       color: #ffffff;
       float: right;
-      font-size: 28px;
+      font-size: 2.8vh;
       font-weight: bold;
     }
     .close:hover,

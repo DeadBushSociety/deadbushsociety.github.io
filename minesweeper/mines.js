@@ -499,8 +499,7 @@ function start_game() {
 }
 
 document.getElementById("deer").onclick = function () {
-  // num_mines = 20;
-  num_mines = 0;
+  num_mines = 20;
   difficulty = "Deer";
   start_game();
 };

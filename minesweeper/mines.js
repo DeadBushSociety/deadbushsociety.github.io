@@ -12,6 +12,7 @@ let timer = false;
 let start_time = 0;
 let end_time = 0;
 let click_count = 0;
+let difficulty = "";
 
 function timecalc(time) {
   let hour = Math.floor(time / 3600000);
@@ -439,13 +440,14 @@ function grid_render(grid, num_row, num_col) {
           end_time = new Date().getTime();
           document.getElementById("stats").style.display = "block";
           document.getElementById(
-            "end-time"
-          ).textContent = `Total Time: ${total_time()}`;
+            "difficulty-stat"
+          ).textContent = `${difficulty}`;
           document.getElementById(
-            "click-efficiency"
-          ).textContent = `Click efficiency: ${(click_efficiency * 100).toFixed(
-            2
-          )}%`;
+            "end-time-stat"
+          ).textContent = `${total_time()}`;
+          document.getElementById("click-efficiency-stat").textContent = `${(
+            click_efficiency * 100
+          ).toFixed(2)}%`;
           document.getElementsByClassName("close")[0].onclick = function () {
             document.getElementById("stats").style.display = "none";
           };
@@ -497,22 +499,28 @@ function start_game() {
 }
 
 document.getElementById("deer").onclick = function () {
-  num_mines = 20;
+  // num_mines = 20;
+  num_mines = 0;
+  difficulty = "Deer";
   start_game();
 };
 document.getElementById("easy").onclick = function () {
+  difficulty = "Easy";
   num_mines = 40;
   start_game();
 };
 document.getElementById("medium").onclick = function () {
+  difficulty = "Medium";
   num_mines = 70;
   start_game();
 };
 document.getElementById("hard").onclick = function () {
+  difficulty = "Hard";
   num_mines = 100;
   start_game();
 };
 document.getElementById("extreme").onclick = function () {
+  difficulty = "Extreme";
   num_mines = 120;
   start_game();
 };

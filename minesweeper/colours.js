@@ -83,7 +83,7 @@ function updateAllMines() {
   }
 }
 
-function defaultColours() {
+document.getElementById("default-colours").onclick = function () {
   document.getElementById("unrevealed_colour").value = "#2f2f2f";
   updateAllUnrevealed();
   document.getElementById("revealed_colour").value = "#fff3c0";
@@ -92,4 +92,4 @@ function defaultColours() {
   updateAllFlags();
   document.getElementById("mine_colour").value = "#e63a21";
   updateAllMines();
-}
+};

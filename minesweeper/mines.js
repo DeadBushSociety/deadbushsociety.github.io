@@ -1,10 +1,10 @@
 const num_col = 18;
 const num_row = 32;
-const num_mines = 119;
+let num_mines = 119;
 const num_cells = num_col * num_row;
+let revealed_cells = 0;
 let flags_left = num_mines;
 let flags_in_html = flags_left;
-let revealed_cells = 0;
 let game_over = false;
 let game_won = false;
 let gamefield = document.querySelector(".gamefield");
@@ -12,19 +12,6 @@ let timer = false;
 let start_time = 0;
 let end_time = 0;
 let click_count = 0;
-
-//The amount of mines are checked at the start of the game and the counter is kept as a 3-digit number
-function flags() {
-  if (flags_left < 100) {
-    flags_in_html = "0" + flags_in_html;
-  }
-  if (flags_left < 10) {
-    flags_in_html = "0" + flags_in_html;
-  }
-  document.getElementById("num_flags").innerHTML = flags_in_html;
-}
-
-flags();
 
 function timecalc(time) {
   let hour = Math.floor(time / 3600000);
@@ -159,6 +146,20 @@ function game_over_case(grid) {
   timer = false;
 }
 
+function update_flag_counter() {
+  flags_in_html = flags_left;
+  if (flags_left < 0) {
+    flags_in_html = flags_left * -1;
+  }
+  if (flags_left < 100 && flags_left >= 0) {
+    flags_in_html = "0" + flags_in_html;
+  }
+  if (flags_left < 10 && flags_left > -10) {
+    flags_in_html = "0" + flags_in_html;
+  }
+  document.getElementById("num_flags").innerHTML = flags_in_html;
+}
+
 function add_flag(cell_row, cell_col, grid) {
   if (!grid[cell_row][cell_col].is_revealed) {
     grid[cell_row][cell_col].flag = !grid[cell_row][cell_col].flag;
@@ -178,17 +179,7 @@ function add_flag(cell_row, cell_col, grid) {
       ).style.background = null;
     }
     //After the update, the amount of digits of the mine counter's value get checked and updated accordingly
-    flags_in_html = flags_left;
-    if (flags_left < 0) {
-      flags_in_html = flags_left * -1;
-    }
-    if (flags_left < 100 && flags_left >= 0) {
-      flags_in_html = "0" + flags_in_html;
-    }
-    if (flags_left < 10 && flags_left > -10) {
-      flags_in_html = "0" + flags_in_html;
-    }
-    document.getElementById("num_flags").innerHTML = flags_in_html;
+    update_flag_counter();
     //If the amount is below 0, the minus symbol gets counted as a digit and only 2 digits of the number are allowed
     if (flags_left < 0) {
       document.getElementById("num_flags").innerHTML =
@@ -269,8 +260,6 @@ function grid_initialize(num_col, num_row, num_mines) {
 
   return grid;
 }
-
-let grid = grid_initialize(num_col, num_row, num_mines);
 
 function bbbv(grid) {
   let required_clicks = 0;
@@ -447,8 +436,6 @@ function grid_render(grid, num_row, num_col) {
           timer = false;
           let threebv = bbbv(grid);
           let click_efficiency = threebv / click_count;
-          console.log(threebv);
-          console.log(click_count);
           end_time = new Date().getTime();
           document.getElementById("stats").style.display = "block";
           document.getElementById(
@@ -500,4 +487,32 @@ function grid_render(grid, num_row, num_col) {
   }
 }
 
-grid_render(grid, num_row, num_col);
+function start_game() {
+  flags_left = num_mines;
+  update_flag_counter();
+  document.getElementById("main-container").style.display = "flex";
+  document.getElementById("difficulties-modal").style.display = "none";
+  let grid = grid_initialize(num_col, num_row, num_mines);
+  grid_render(grid, num_row, num_col);
+}
+
+document.getElementById("deer").onclick = function () {
+  num_mines = 20;
+  start_game();
+};
+document.getElementById("easy").onclick = function () {
+  num_mines = 40;
+  start_game();
+};
+document.getElementById("medium").onclick = function () {
+  num_mines = 70;
+  start_game();
+};
+document.getElementById("hard").onclick = function () {
+  num_mines = 100;
+  start_game();
+};
+document.getElementById("extreme").onclick = function () {
+  num_mines = 120;
+  start_game();
+};
